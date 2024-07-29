@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+      <a-entity id="equation-surface"></a-entity>
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      AFRAME.registerComponent("equation-surface", {
+        init: function () {
+          // Function to evaluate the equation
+          function evaluateEquation(x, y) {
+            // Example equation: z = sin(x) * cos(y)
+            return Math.sin(x) * Math.cos(y);
+          }
+
+          // Create the surface geometry
+          const geometry = new THREE.BufferGeometry();
+          const vertices = [];
+          const colors = [];
+
+          const xRange = 1;
+          const yRange = 1;
+          const step = 0.05;
+
+          for (let x = -xRange; x <= xRange; x += step) {
+            for (let y = -yRange; y <= yRange; y += step) {
+              const z = evaluateEquation(x, y);
+              vertices.push(x, y, z);
+
+              // Add color based on z value
+              const color = new THREE.Color();
+              color.setHSL((z + 1) / 2, 1, 0.5);
+              colors.push(color.r, color.g, color.b);
+            }
+          }
+
+          geometry.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(vertices, 3)
+          );
+          geometry.setAttribute(
+            "color",
+            new THREE.Float32BufferAttribute(colors, 3)
+          );
+
+          // Create the surface material
+          const material = new THREE.PointsMaterial({
+            size: 0.01,
+            vertexColors: true,
+          });
+
+          // Create the surface mesh
+          const surface = new THREE.Points(geometry, material);
+
+          // Add the surface to the entity
+          this.el.setObject3D("mesh", surface);
+
+          // Add axes helper
+          const axesHelper = new THREE.AxesHelper(1);
+          this.el.object3D.add(axesHelper);
+        },
+      });
+
+      // Register and add the component to the entity
+      document
+        .querySelector("#equation-surface")
+        .setAttribute("equation-surface", "");
+    </script>
+  </body>
+</html>
