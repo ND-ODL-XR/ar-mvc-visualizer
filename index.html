@@ -44,53 +44,160 @@
       input[type="submit"]:hover {
         background-color: #45a049;
       }
+      #vectorFunction {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+      #equations {
+        display: flex;
+        flex-direction: column;
+      }
       #qrcode {
         margin-top: 20px;
+      }
+      .hidden {
+        display: none;
       }
     </style>
   </head>
   <body>
-    <form id="equationForm">
-      <h2>Enter a Math Equation</h2>
-      <h5>Use code format e.g. ** for power, Math.sin(x) for sin, etc.</h5>
-      <div>
-        <b>z =</b>
-        <input
-          type="text"
-          id="equation"
-          placeholder="e.g., Math.sin(x) * Math.cos(y)"
-          required
-        />
+    <div id="implicitEquationSection">
+      <form id="equationForm">
+        <h2>Enter a Math Equation</h2>
+        <h5>Use code format e.g. ** for power, Math.sin(x) for sin, etc.</h5>
+        <div>
+          <input
+            type="text"
+            id="left"
+            placeholder="e.g. Math.sin(x) * Math.cos(y)"
+            required
+          />
+          <b>=</b>
+          <input type="text" id="right" placeholder="e.g. z" required />
+          <input type="submit" value="Generate QR Code" />
+        </div>
+      </form>
+    </div>
+
+    <div id="vectorFunctionsSection" class="hidden">
+      <form id="vectorForm">
+        <h2>Enter Vector-Valued Functions</h2>
+        <div id="vectorFunction">
+          <div id="leftSide">S(x,y) = [</div>
+          <div id="equations">
+            <input
+              type="text"
+              class="vectorEquation"
+              id="f"
+              placeholder="e.g. x+y"
+              required
+            />
+            <input
+              type="text"
+              class="vectorEquation"
+              id="g"
+              placeholder="e.g. x+y"
+              required
+            />
+            <input
+              type="text"
+              class="vectorEquation"
+              id="h"
+              placeholder="e.g. x+y"
+              required
+            />
+          </div>
+          <div>]</div>
+        </div>
         <input type="submit" value="Generate QR Code" />
-      </div>
-    </form>
+      </form>
+    </div>
+    <button id="equationTypeToggleButton">
+      Switch to Vector-Valued Functions
+    </button>
 
     <div id="qrcode"></div>
 
     <script>
+      const toggleButton = document.getElementById("toggleButton");
+      const implicitEquationSection = document.getElementById(
+        "implicitEquationSection"
+      );
+      const vectorFunctionsSection = document.getElementById(
+        "vectorFunctionsSection"
+      );
+
+      equationTypeToggleButton.addEventListener("click", () => {
+        if (implicitEquationSection.classList.contains("hidden")) {
+          implicitEquationSection.classList.remove("hidden");
+          vectorFunctionsSection.classList.add("hidden");
+          equationTypeToggleButton.textContent =
+            "Switch to Vector-Valued Functions";
+        } else {
+          implicitEquationSection.classList.add("hidden");
+          vectorFunctionsSection.classList.remove("hidden");
+          equationTypeToggleButton.textContent = "Switch to Implicit Equation";
+        }
+      });
+
       document
         .getElementById("equationForm")
-        .addEventListener("submit", function (e) {
+        .addEventListener("submit", (e) => {
           e.preventDefault();
-          var equation = document.getElementById("equation").value;
-          var encodedEquation = encodeURIComponent(equation);
-          var url =
-            "https://ndlearning.8thwall.app/ar-math-viewer/?equation=" +
-            encodedEquation;
+          document
+            .getElementById("equationForm")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              const left = document.getElementById("left").value;
+              const right = document.getElementById("right").value;
+              const encodedLeft = encodeURIComponent(left);
+              const encodedRight = encodeURIComponent(right);
+              const url =
+                "https://ndlearning.8thwall.app/ar-math-viewer/?left=" +
+                encodedLeft +
+                "&right=" +
+                encodedRight;
 
-          // Clear previous QR code
-          document.getElementById("qrcode").innerHTML = "";
+              // Clear previous QR code
+              document.getElementById("qrcode").innerHTML = "";
 
-          // Generate new QR code
-          new QRCode(document.getElementById("qrcode"), {
-            text: url,
-            width: 256,
-            height: 256,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H,
-          });
+              // Generate new QR code
+              new QRCode(document.getElementById("qrcode"), {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.L,
+              });
+            });
         });
+
+      document.getElementById("vectorForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const url =
+          "https://ndlearning.8thwall.app/ar-math-viewer/?eqf=" +
+          encodeURIComponent(document.getElementById("f").value) +
+          "&g=" +
+          encodeURIComponent(document.getElementById("g").value) +
+          "&h=" +
+          encodeURIComponent(document.getElementById("h").value);
+
+        // Clear previous QR code
+        document.getElementById("qrcode").innerHTML = "";
+
+        // Generate new QR code
+        new QRCode(document.getElementById("qrcode"), {
+          text: url,
+          width: 256,
+          height: 256,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.L,
+        });
+      });
     </script>
   </body>
 </html>
