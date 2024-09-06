@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AR Math Viewer Equation Input</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://conductor.nd.edu/stylesheets/themes/ndt/3.0/ndt.css"
+    />
+
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -12,19 +18,25 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        width: 100vw;
+        height: 150vh;
         margin: 0;
         background-color: #f0f0f0;
+        overflow-y: scroll;
+        overflow-x: hidden;
       }
       h5 {
         opacity: 0.7;
       }
       form {
         background-color: white;
-        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        padding: 50px;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
+        gap: 20px;
       }
       input[type="text"] {
         width: 300px;
@@ -34,7 +46,7 @@
         border-radius: 4px;
       }
       input[type="submit"] {
-        background-color: #4caf50;
+        background-color: #d39f10;
         color: white;
         padding: 10px 15px;
         border: none;
@@ -42,7 +54,17 @@
         cursor: pointer;
       }
       input[type="submit"]:hover {
-        background-color: #45a049;
+        background-color: #b6880a;
+      }
+      #equationTypeToggleButton {
+        font-size: 15px;
+        background-color: #0c2340;
+        color: white;
+        padding: 15px 35px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 20px;
       }
       #vectorFunction {
         display: flex;
@@ -56,68 +78,363 @@
       #qrcode {
         margin-top: 20px;
       }
+      #caption {
+        opacity: 0.5;
+      }
+      #vectorForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .site-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 30%;
+      }
+      .main-stuff {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        max-height: 20vh !important;
+      }
       .hidden {
         display: none;
       }
     </style>
   </head>
-  <body>
-    <div id="implicitEquationSection">
-      <form id="equationForm">
-        <h2>Enter a Math Equation</h2>
-        <h5>Use code format e.g. ** for power, Math.sin(x) for sin, etc.</h5>
-        <div>
-          <input
-            type="text"
-            id="left"
-            placeholder="e.g. Math.sin(x) * Math.cos(y)"
-            required
-          />
-          <b>=</b>
-          <input type="text" id="right" placeholder="e.g. z" required />
-          <input type="submit" value="Generate QR Code" />
-        </div>
-      </form>
-    </div>
 
-    <div id="vectorFunctionsSection" class="hidden">
-      <form id="vectorForm">
-        <h2>Enter Vector-Valued Functions</h2>
-        <div id="vectorFunction">
-          <div id="leftSide">S(x,y) = [</div>
-          <div id="equations">
-            <input
-              type="text"
-              class="vectorEquation"
-              id="f"
-              placeholder="e.g. x+y"
-              required
-            />
-            <input
-              type="text"
-              class="vectorEquation"
-              id="g"
-              placeholder="e.g. x+y"
-              required
-            />
-            <input
-              type="text"
-              class="vectorEquation"
-              id="h"
-              placeholder="e.g. x+y"
-              required
+  <body>
+    <div id="wrapper" class="wrapper">
+      <header id="header" class="site-header">
+        <!-- Academic mark  -->
+        <p class="mark-header">
+          <a href="https://www.nd.edu/">University of Notre Dame</a>
+        </p>
+        <div class="site-title-group">
+          <p class="site-parent">Parent Unit Name</p>
+          <!-- optional-->
+          <h1 id="site-title" class="site-title">
+            <a href="/" accesskey="1" title="Homepage shortcut key = 1"
+              >Site Title</a
+            >
+          </h1>
+          <p class="site-tagline">Tagline for Site</p>
+          <!-- optional -->
+        </div>
+        <div class="nav-header">
+          <nav
+            id="nav-top"
+            class="nav-top"
+            role="navigation"
+            aria-label="Primary navigation"
+          >
+            <!-- Top nav...  -->
+            <!-- Search form... -->
+          </nav>
+        </div>
+        <div class="nav-mobile-util"><!-- Mobile navbar... --></div>
+      </header>
+      <div id="content" class="site-content">
+        <main class="main-stuff">
+          <div id="implicitEquationSection">
+            <form id="equationForm">
+              <h2>Enter an Equation:</h2>
+              <div id="caption">
+                Use JavaScript format e.g. ** for power, Math.sin(x) for sin,
+                etc.
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="left"
+                  placeholder="e.g. Math.sin(x) * Math.cos(y)"
+                  required
+                />
+                <b>=</b>
+                <input type="text" id="right" placeholder="e.g. z" required />
+              </div>
+              <input type="submit" value="Generate QR Code" />
+            </form>
+          </div>
+
+          <div id="vectorFunctionsSection" class="hidden">
+            <form id="vectorForm">
+              <h2>Enter Vector-Valued Functions:</h2>
+              <div id="vectorFunction">
+                <div id="leftSide">S(x,y) = [</div>
+                <div id="equations">
+                  <input
+                    type="text"
+                    class="vectorEquation"
+                    id="f"
+                    placeholder="e.g. x+y"
+                    required
+                  />
+                  <input
+                    type="text"
+                    class="vectorEquation"
+                    id="g"
+                    placeholder="e.g. x+y"
+                    required
+                  />
+                  <input
+                    type="text"
+                    class="vectorEquation"
+                    id="h"
+                    placeholder="e.g. x+y"
+                    required
+                  />
+                </div>
+                <div>]</div>
+              </div>
+              <input type="submit" value="Generate QR Code" />
+            </form>
+          </div>
+          <button id="equationTypeToggleButton">
+            Switch to Vector-Valued Functions
+          </button>
+
+          <div id="qrcode"></div>
+        </main>
+      </div>
+
+      <footer id="footer" class="site-footer" role="contentinfo">
+        <!-- Site-specific Information -->
+        <div class="footer-org" typeof="Organization" resource="#siteorg">
+          <meta
+            property="parentOrganization"
+            resource="#parentorg"
+            content="University of Notre Dame"
+          />
+          <ul class="footer-breadcrumbs">
+            <li><a href="https://example.nd.edu/">Parent Unit</a></li>
+          </ul>
+          <p>
+            <a href="/" class="site-link" property="url"
+              ><span property="name">Site Name</span></a
+            >
+          </p>
+          <div class="footer-contacts">
+            <!-- Site contact information -->
+            <p class="contact-info">
+              <span class="address" property="address" typeof="PostalAddress">
+                <span property="streetAddress">Street Address</span><br />
+                <span property="addressLocality">Notre Dame</span>,
+                <span property="addressRegion">IN</span>
+                <span property="postalCode">46556</span>
+                <span property="addressCountry">USA</span>
+              </span>
+              <!-- Phone number has tel: link -->
+              <span
+                class="footer-phone"
+                property="telephone"
+                content="+1 574-555-1234"
+                >Phone <a href="tel:574-555-1234">574-555-1234</a></span
+              >
+              <span
+                class="footer-fax"
+                property="faxNumber"
+                content="+1 574-555-1234"
+                >Fax 574-555-1234</span
+              >
+              <!-- Email has mailto: link -->
+              <span class="footer-email" property="email"
+                ><a rel="noopener" href="mailto:example@nd.edu"
+                  >example@nd.edu</a
+                ></span
+              >
+            </p>
+            <!-- Optional site-specific link(s) -->
+            <!-- <p class="footer-org-links"><a href="#">Legal</a></p> -->
+            <!-- Site social links -->
+            <nav
+              class="social"
+              aria-label="Site Name social media navigation"
+              vocab=""
+            >
+              <ul>
+                <!-- Social links have "noopener" rel attributes -->
+                <!-- Each link has an aria-label to differentiate it from any university-specific social links -->
+                <li>
+                  <a
+                    class="soc-facebook"
+                    href="#"
+                    rel="noopener"
+                    aria-label="Site Name on Facebook"
+                    ><svg
+                      class="icon"
+                      width="16"
+                      height="16"
+                      aria-hidden="true"
+                    >
+                      <use xlink:href="#icon-facebook"></use>
+                    </svg>
+                    Facebook</a
+                  >
+                </li>
+                <!-- Other social links... -->
+              </ul>
+            </nav>
+          </div>
+          <div property="logo" typeof="ImageObject">
+            <meta
+              property="url"
+              content="https://static.nd.edu/images/webclips/default/webclip-60.png"
             />
           </div>
-          <div>]</div>
+          <p class="copyright">
+            <a href="https://www.nd.edu/copyright/">&copy; 2024</a>
+            <a href="https://www.nd.edu">University of Notre Dame</a>
+          </p>
         </div>
-        <input type="submit" value="Generate QR Code" />
-      </form>
-    </div>
-    <button id="equationTypeToggleButton">
-      Switch to Vector-Valued Functions
-    </button>
 
-    <div id="qrcode"></div>
+        <!-- University information -->
+        <div
+          class="footer-parent"
+          property="parentOrganization"
+          typeof="CollegeOrUniversity"
+          resource="#parentorg"
+        >
+          <meta property="name" content="University of Notre Dame" />
+          <a
+            href="https://www.nd.edu/"
+            class="mark-footer"
+            property="url logo"
+            typeof="ImageObject"
+            aria-label="University of Notre Dame"
+          >
+            <img
+              src="https://static.nd.edu/images/marks/gray/ndmark.svg"
+              width="250"
+              height="60"
+              alt="University of Notre Dame"
+              property="url"
+            />
+          </a>
+          <div class="footer-parent-links">
+            <!-- University links -->
+            <nav aria-label="Footer links navigation">
+              <ul class="footer-links">
+                <!-- Each link has an aria-label to differentiate it from any site-specific links -->
+                <li>
+                  <a
+                    href="https://search.nd.edu/"
+                    aria-label="Search Notre Dame"
+                    >Search</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://mobile.nd.edu/"
+                    aria-label="Notre Dame Mobile App"
+                    >Mobile App</a
+                  >
+                </li>
+                <li>
+                  <a href="https://news.nd.edu/" aria-label="Notre Dame News"
+                    >News</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://events.nd.edu/"
+                    aria-label="Notre Dame Events"
+                    >Events</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://www.nd.edu/visit/"
+                    aria-label="Visit Notre Dame"
+                    >Visit</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://www.nd.edu/about/accessibility/"
+                    aria-label="Notre Dame Accessibility Information"
+                    >Accessibility</a
+                  >
+                </li>
+              </ul>
+            </nav>
+            <!-- University social -->
+            <nav
+              class="social"
+              aria-label="Notre Dame social media navigation"
+              vocab=""
+            >
+              <!-- Social links have "noopener" rel attributes -->
+              <!-- Each link also has an aria-label to differentiate it from any site-specific social links -->
+              <li>
+                <a
+                  class="soc-facebook"
+                  href="https://www.facebook.com/notredame/"
+                  rel="noopener"
+                  aria-label="Notre Dame on Facebook"
+                  ><svg class="icon" width="16" height="16" aria-hidden="true">
+                    <use xlink:href="#icon-facebook"></use>
+                  </svg>
+                  Facebook</a
+                >
+              </li>
+              <li>
+                <a
+                  class="soc-twitter"
+                  href="https://twitter.com/NotreDame/"
+                  rel="noopener"
+                  aria-label="Notre Dame on Twitter"
+                  ><svg class="icon" width="16" height="16" aria-hidden="true">
+                    <use xlink:href="#icon-twitter"></use>
+                  </svg>
+                  Twitter</a
+                >
+              </li>
+              <li>
+                <a
+                  class="soc-instagram"
+                  href="https://www.instagram.com/notredame/"
+                  rel="noopener"
+                  aria-label="Notre Dame on Instagram"
+                  ><svg class="icon" width="16" height="16" aria-hidden="true">
+                    <use xlink:href="#icon-instagram"></use>
+                  </svg>
+                  Instagram</a
+                >
+              </li>
+              <li>
+                <a
+                  class="soc-youtube"
+                  href="https://www.youtube.com/user/NDdotEDU"
+                  rel="noopener"
+                  aria-label="Notre Dame on YouTube"
+                  ><svg class="icon" width="16" height="16" aria-hidden="true">
+                    <use xlink:href="#icon-youtube"></use>
+                  </svg>
+                  YouTube</a
+                >
+              </li>
+              <li>
+                <a
+                  class="soc-linkedin"
+                  href="https://www.linkedin.com/school/university-of-notre-dame/"
+                  rel="noopener"
+                  aria-label="Notre Dame on Linkedin"
+                  ><svg class="icon" width="16" height="16" aria-hidden="true">
+                    <use xlink:href="#icon-linkedin"></use>
+                  </svg>
+                  LinkedIn</a
+                >
+              </li>
+            </nav>
+          </div>
+        </div>
+      </footer>
+    </div>
 
     <script>
       const toggleButton = document.getElementById("toggleButton");
@@ -143,35 +460,30 @@
 
       document
         .getElementById("equationForm")
-        .addEventListener("submit", (e) => {
+        .addEventListener("submit", function (e) {
           e.preventDefault();
-          document
-            .getElementById("equationForm")
-            .addEventListener("submit", function (e) {
-              e.preventDefault();
-              const left = document.getElementById("left").value;
-              const right = document.getElementById("right").value;
-              const encodedLeft = encodeURIComponent(left);
-              const encodedRight = encodeURIComponent(right);
-              const url =
-                "https://ndlearning.8thwall.app/ar-math-viewer/?left=" +
-                encodedLeft +
-                "&right=" +
-                encodedRight;
+          const left = document.getElementById("left").value;
+          const right = document.getElementById("right").value;
+          const encodedLeft = encodeURIComponent(left);
+          const encodedRight = encodeURIComponent(right);
+          const url =
+            "https://ndlearning.8thwall.app/ar-math-viewer/?left=" +
+            encodedLeft +
+            "&right=" +
+            encodedRight;
 
-              // Clear previous QR code
-              document.getElementById("qrcode").innerHTML = "";
+          // Clear previous QR code
+          document.getElementById("qrcode").innerHTML = "";
 
-              // Generate new QR code
-              new QRCode(document.getElementById("qrcode"), {
-                text: url,
-                width: 256,
-                height: 256,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.L,
-              });
-            });
+          // Generate new QR code
+          new QRCode(document.getElementById("qrcode"), {
+            text: url,
+            width: 256,
+            height: 256,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L,
+          });
         });
 
       document.getElementById("vectorForm").addEventListener("submit", (e) => {
